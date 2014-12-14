@@ -5,6 +5,10 @@ define([], function () {
         $scope.clusterStatus = {};
 
         $scope.updateStatus = function(){
+
+            //reset errors
+            $scope.errors = [];
+
             $http.get('/api/v1/cluster/status').
                 success(function(data, status, headers, config) {
                     if (data.success === true) {
@@ -37,6 +41,9 @@ define([], function () {
 
 
         $scope.updateIngestStats = function(){
+            //reset errors
+            $scope.errors = [];
+
             $http.get('/api/v1/cluster/ingest').
                 success(function(response, status, headers, config) {
                     if (response.success === true) {
