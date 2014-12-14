@@ -18,7 +18,7 @@ define([], function () {
                     }
                 }).
                 error(function(data, status, headers, config) {
-                    $scope.errors.push('Failed to retrieve cluster status: '+data+'('+status+')');
+                    $scope.errors.push('Failed to retrieve cluster status');
                 });
         };
 
@@ -53,7 +53,7 @@ define([], function () {
                     }
                 }).
                 error(function(response, status, headers, config) {
-                    $scope.errors.push('Failed to retrieve ingest stats: '+response+'('+response+')');
+                    $scope.errors.push('Failed to retrieve ingest stats');
                 });
         };
 
