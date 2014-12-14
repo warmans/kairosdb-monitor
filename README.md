@@ -22,7 +22,7 @@ Dashboard for monitoring a KairosDB cluster.
 1. From the project root run `./kairos-monitor start`
 2. Optionally run `./kairos-monitor status` to confirm the application is running correctly
 3. Optionally `tail -f log/app.log` to see what the application is doing
-4. Optionally stop the application using `.kairos-monitor stop` 
+4. Optionally stop the application using `./kairos-monitor stop` 
 
 (note linking the kairos-monitor script to /etc/init.d does not work currently)
 
