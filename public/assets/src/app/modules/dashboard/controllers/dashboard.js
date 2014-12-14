@@ -42,7 +42,7 @@ define([], function () {
                     if (response.success === true) {
                         $scope.ingestStats = response.payload;
                     } else {
-                        $scope.errors.push(response.msg);
+                        $scope.errors.push('Ingest stats report an error: '+response.msg);
                     }
                 }).
                 error(function(response, status, headers, config) {
