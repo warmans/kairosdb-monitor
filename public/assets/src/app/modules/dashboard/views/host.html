@@ -1,0 +1,18 @@
+<div class="container-fluid">
+
+    <div class="alert alert-danger" ng-repeat="error in errors">{{error}}</div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">INGEST STATS</h3>
+                </div>
+                <div class="panel-body">
+                    <flot dataset="[{label: 'RPM', data: ingestStats.data, color: '#428bca'}]" options="ingestChartOptions" height="200px" width="100%"></flot>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

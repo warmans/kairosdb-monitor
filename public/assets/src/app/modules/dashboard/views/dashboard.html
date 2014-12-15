@@ -8,7 +8,7 @@
                 <div class="panel-heading">
                     <div class="pull-right" ng-show="ingestStats.updated">
                         <span class="label label-success">{{ingestStats.query_time_ms}}ms</span>
-                        <span class="label label-default">{{ingestStats.query_node.alias}}</span>
+                        <span class="label label-default">{{ingestStats.query_node.label}}</span>
                         <span class="label label-default">{{ingestStats.updated}}</span>
                     </div>
                     <h3 class="panel-title">INGEST REQUESTS PER MINUITE</h3>
@@ -55,16 +55,18 @@
                         <th>Response Time</th>
                         <th>Tags</th>
                         <th>Last Updated</th>
+                        <th>Actions</th>
                     </tr>
                     <tr ng-repeat="node in clusterStatus.nodes">
                         <td><span class="label" ng-class="{'label-success': node.status==='UN', 'label-warning': node.status==='US', 'label-danger': node.status==='DN'}">{{node.status}} <span ng-hide="node.status === 'UN'">({{node.http_status}})</span></span></td>
 
-                        <td><abbr title="{{node.host}}">{{node.alias}}</abbr></td>
+                        <td><abbr title="{{node.hostname}}">{{node.label}}</abbr></td>
 
                         <td>{{node.msg}}</td>
                         <td>{{node.response_time_ms}}ms</td>
                         <td><span ng-bind-html="node.tags | tags:'label-primary'"></span></td>
                         <td>{{node.updated}}</td>
+                        <td><a class="btn btn-primary btn-sm" href="/#/dashboard/host/{{node.hostname}}">Details</a></td>
                     </tr>
                 </table>
             </div>

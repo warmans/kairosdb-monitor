@@ -12,6 +12,10 @@ define([
                 .when('/dashboard', {
                     templateUrl: '/assets/src/app/modules/dashboard/views/dashboard.html',
                     controller: 'dashboardController'
+                })
+                .when('/dashboard/host/:host', {
+                    templateUrl: '/assets/src/app/modules/dashboard/views/host.html',
+                    controller: 'hostController'
                 });
         }]);
 
