@@ -12,43 +12,33 @@
                         <span class="label label-default">{{ingestStats.updated}}</span>
                     </div>
                     <h3 class="panel-title">INGEST REQUESTS PER MINUITE</h3>
-
                 </div>
                 <div class="panel-body">
-                    <flot dataset="[{label: 'RPM', data: ingestStats.data}]" options="ingestChartOptions" height="200px" width="100%"></flot>
+                    <flot dataset="[{label: 'RPM', data: ingestStats.data, color: '#428bca'}]" options="ingestChartOptions" height="200px" width="100%"></flot>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-lg-4">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h3 class="panel-title text-center">NORMAL</h3>
-                </div>
+        <div class="col-lg-5">
+            <div class="panel panel-default">
                 <div class="panel-body numeric-status text-success">
-                    {{clusterStatus.status_count['UN'] | default:"0"}}
+                    {{clusterStatus.status_count['UN'] | default:"0"}} UN
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="panel panel-warning">
-                <div class="panel-heading">
-                    <h3 class="panel-title text-center">SLOW</h3>
-                </div>
+        <div class="col-lg-2">
+            <div class="panel panel-default">
                 <div class="panel-body numeric-status text-warning">
-                    {{clusterStatus.status_count['US'] | default:"0"}}
+                    {{clusterStatus.status_count['US'] | default:"0"}} US
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="panel panel-danger">
-                <div class="panel-heading">
-                    <h3 class="panel-title text-center">DOWN</h3>
-                </div>
+        <div class="col-lg-5">
+            <div class="panel panel-default">
                 <div class="panel-body numeric-status text-danger">
-                    {{clusterStatus.status_count['DN'] | default:"0"}}
+                    {{clusterStatus.status_count['DN'] | default:"0"}} DN
                 </div>
             </div>
         </div>
@@ -57,22 +47,23 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">NODES</h3>
-                </div>
-                <table class="table table-striped">
+                <table class="table table-striped table-hover">
                     <tr>
+                        <th style="width: 100px">Status</th>
                         <th>Node</th>
-                        <th>Status</th>
                         <th>Msg</th>
                         <th>Response Time</th>
+                        <th>Tags</th>
                         <th>Last Updated</th>
                     </tr>
-                    <tr ng-repeat="node in clusterStatus.nodes" ng-class="{'success': node.status==='UN', 'warning': node.status==='US', 'danger': node.status==='DN'}">
-                        <td>{{node.alias}}</td>
-                        <td>{{node.status}} ({{node.http_status}})</td>
+                    <tr ng-repeat="node in clusterStatus.nodes">
+                        <td><span class="label" ng-class="{'label-success': node.status==='UN', 'label-warning': node.status==='US', 'label-danger': node.status==='DN'}">{{node.status}} <span ng-hide="node.status === 'UN'">({{node.http_status}})</span></span></td>
+
+                        <td><abbr title="{{node.host}}">{{node.alias}}</abbr></td>
+
                         <td>{{node.msg}}</td>
                         <td>{{node.response_time_ms}}ms</td>
+                        <td><span ng-bind-html="node.tags | tags:'label-primary'"></span></td>
                         <td>{{node.updated}}</td>
                     </tr>
                 </table>

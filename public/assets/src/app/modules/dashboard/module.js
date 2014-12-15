@@ -15,7 +15,6 @@ define([
                 });
         }]);
 
-
         app.controller('dashboardController', dashboardController);
     }
 );

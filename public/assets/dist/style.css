@@ -6165,6 +6165,7 @@ button.close {
 }
 body {
   padding-top: 20px;
+  background-color: #f7f7f7;
 }
 .panel-body.numeric-status {
   text-align: center;

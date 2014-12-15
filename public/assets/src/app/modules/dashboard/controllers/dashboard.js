@@ -32,11 +32,17 @@ define([], function () {
         $scope.ingestChartOptions = {
             grid: { hoverable: true, borderWidth: 0},
             series: { shadowSize: 0 },
-            lines : { lineWidth : 2, fill: false, steps: false },
+            lines : { lineWidth : 1, fill: true },
             legend: { show: false },
             tooltip: true,
             tooltipOpts: {},
-            xaxis: { mode: "time" }
+            xaxis: { mode: "time" },
+            yaxis: {
+                min: 0,
+                tickFormatter: function(val, axis) {
+                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+            }
         };
 
 
