@@ -1,8 +1,9 @@
 define([
-    './controllers/dashboard'
+    './controllers/dashboard',
+    './controllers/host'
     ],
 
-    function (dashboardController) {
+    function (dashboardController, hostController) {
 
         var app = angular.module('monitor.dashboard', []);
 
@@ -20,5 +21,6 @@ define([
         }]);
 
         app.controller('dashboardController', dashboardController);
+        app.controller('hostController', hostController);
     }
 );
