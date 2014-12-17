@@ -6,13 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var http = require('http');
 
-//global cache (how does this work without globals?!)
-var cacheManager = require('cache-manager');
-global.memoryCache = cacheManager.caching({store: 'memory', max: 100, ttl: false/*forever*/});
-
-//config file - globals again...
-global.config = require('./config/config');
-
 var app = express();
 
 // view engine setup
@@ -59,8 +52,9 @@ app.use(function(err, req, res, next) {
     });
 });
 
-//setup scheduled tasks
-require('./lib/cron');
+//setup node monitoring
+var monitor = require('./lib/status-monitor');
+monitor.start();
 
 module.exports = app;
 
