@@ -34,7 +34,7 @@ define([], function () {
                 $scope.errors.push('Failed to retrieve '+config.uri);
             });
 
-        $http.get('/api/v1/host/'+$routeParams.host+'/graph/kairosdb.datastore.query_row_count').
+        $http.get('/api/v1/host/'+$routeParams.host+'/graph/kairosdb.datastore.query_time').
             success(function(response, status, headers, config) {
                 if (response.success === true) {
                     $scope.datasets.push({name: 'Query Row Count', data: response.payload});
