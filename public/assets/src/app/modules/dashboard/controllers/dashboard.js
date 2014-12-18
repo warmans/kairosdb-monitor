@@ -80,14 +80,17 @@ define([], function () {
                 }).
                 error(function(response, status, headers, config) {
                     $scope.errors.push('Chart data not available because: '+status+' error');
+                }).
+                finally(function(){
+                    //schedule another update for 10 seconds time
+                    setTimeout(function(){
+                        $scope.updateIngestStats();
+                    }, 10000);
                 });
         };
 
-        //load initial status
+        //start updating ingest stats
         $scope.updateIngestStats();
-
-        //start updating
-        setInterval($scope.updateIngestStats, 10000);
     }
 
     controller.$inject=['$scope', '$http'];
