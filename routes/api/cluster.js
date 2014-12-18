@@ -72,7 +72,7 @@ router.post('/query', function(req, res) {
             }
             apiResponder.respond(res, true, payload, []);
         },
-        60000);
+        60);
 });
 
 module.exports = router;
