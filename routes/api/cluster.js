@@ -71,7 +71,8 @@ router.post('/query', function(req, res) {
                 payload.data = result['queries'][0]['results'][0]['values'] ? result['queries'][0]['results'][0]['values'] : [];
             }
             apiResponder.respond(res, true, payload, []);
-        });
+        },
+        60000);
 });
 
 module.exports = router;
