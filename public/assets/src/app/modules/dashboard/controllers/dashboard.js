@@ -73,7 +73,7 @@ define([], function () {
             $http.post('/api/v1/cluster/query', ingestStatsQuery).
                 success(function(response, status, headers, config) {
                     if (response.success === true) {
-                        $scope.ingestStats = response.payload.data;
+                        $scope.ingestStats = response.payload;
                     } else {
                         $scope.errors.push('Chart data not available because: '+response.errors.join(', '));
                     }
