@@ -20,8 +20,6 @@ define([], function () {
             }
         };
 
-
-
         $http.get('/api/v1/host/'+$routeParams.host+'/graph/kairosdb.jvm.free_memory').
             success(function(response, status, headers, config) {
                 if (response.success === true) {

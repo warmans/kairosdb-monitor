@@ -5,88 +5,73 @@ var cacheManager = require('cache-manager');
 var request = require('request');
 
 var monitor = require('../../lib/status-monitor');
+var kairosdb = require('../../lib/kairosdb');
 var apiResponder = require('../../lib/api-responder');
 
-/**
- * Node status list
- */
+//-------------------------------------------------------------------------------------------------------------------
+// Handle Status Updates (push)
+//-------------------------------------------------------------------------------------------------------------------
+var openConnections = [];
+
 router.get('/status', function(req, res) {
-    apiResponder.respond(res, true, monitor.status ? monitor.status : {});
+
+    //don't timeout
+    req.socket.setTimeout(Infinity);
+
+    // send headers for event-stream connection
+    // see spec for more information
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    });
+    res.write('\n');
+
+    // push this res object to our global variable
+    openConnections.push(res);
+
+    //clean up disconnected clients
+    req.on('close', function(){
+        openConnections.splice(openConnections.indexOf(res), 1);
+    });
+
 });
 
-/**
- * Cluster wide ingest stats
- */
-router.get('/ingest', function(req, res) {
+monitor.addSubscriber(function(status){
+    //update clients with latest status
+    openConnections.forEach(function(resp) {
+        var d = new Date();
+        resp.write('id: ' + d.getMilliseconds() + '\n');
+        resp.write('data:' + JSON.stringify({success: true, payload: monitor.status ? monitor.status : {}, errors: []}) + '\n\n');
+    });
+});
 
-    var memoryCache = cacheManager.caching({store: 'memory', ttl: 60000 /* 1 min */});
+//-------------------------------------------------------------------------------------------------------------------
+// Handle data queries (pull)
+//-------------------------------------------------------------------------------------------------------------------
+
+router.post('/query', function(req, res) {
     var startTime = Date.now();
 
-    memoryCache.wrap(
-        'cluster.ingest_stats',
-        function (cb) {
-
-            //find the fastest node currently available
-            var queryNode = monitor.getFastNode();
-            if (!queryNode) {
-                cb(null, []);
-                return;
-            }
-
-            var options = {
-                uri: 'http://'+queryNode.hostname+':'+queryNode.port+'/api/v1/datapoints/query',
-                method: 'POST',
-                timeout: 300*1000, //5 minute timeout
-                body: JSON.stringify({
-                    "metrics": [{
-                        "tags": {},
-                        "name": "kairosdb.http.ingest_count",
-                        "aggregators": [{"name": "sum", "align_sampling": true, "sampling": {"value": "1", "unit": "minutes"}}]
-                    }],
-                    "cache_time": 0,
-                    "start_relative": { "value": "1", "unit": "hours" }
-                })
-            };
-
-            request(options, function(error, response, body) {
-                if (error) {
-                    cb(error);
-                } else {
-                    if (response.statusCode === 200) {
-                        try {
-                            var data = JSON.parse(body);
-
-                            var payload = {
-                                query_node: queryNode,
-                                query_time_ms: Date.now() - startTime,
-                                data: data['queries'][0]['results'][0]['values'] ? data['queries'][0]['results'][0]['values'] : [],
-                                updated: new Date()
-                            };
-
-                            cb(null, payload);
-
-                        } catch (e) {
-                            cb(e.message);
-                        }
-                    } else {
-                        cb('Unexpected response status: '+response.statusCode);
-                    }
-                }
-            });
-        },
-        60000, //60 second cache
+    kairosdb.query(
+        req.body,
         function (err, result) {
             if (err) {
                 apiResponder.respond(res, false, {}, [err]);
-            } else {
-                if (result) {
-                    apiResponder.respond(res, true, result);
-                } else {
-                    apiResponder.respond(res, true, {}, []);
-                }
+                return;
             }
-        }
-    );
+
+            var payload = {
+                query_time_ms: Date.now() - startTime,
+                data:  [],
+                updated: new Date()
+            };
+
+            if (result['queries']) {
+                payload.data = result['queries'][0]['results'][0]['values'] ? result['queries'][0]['results'][0]['values'] : [];
+            }
+            apiResponder.respond(res, true, payload, []);
+        });
 });
 
 module.exports = router;
