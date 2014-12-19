@@ -1,9 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var cacheManager = require('cache-manager');
 var request = require('request');
-
 var monitor = require('../../lib/status-monitor');
 var kairosdb = require('../../lib/kairosdb');
 var apiResponder = require('../../lib/api-responder');
