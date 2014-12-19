@@ -42,7 +42,7 @@ monitor.addSubscriber(function(status){
     openConnections.forEach(function(resp) {
         var d = new Date();
         resp.write('id: ' + d.getMilliseconds() + '\n');
-        resp.write('data:' + JSON.stringify({success: true, payload: monitor.status ? monitor.status : {}, errors: []}) + '\n\n');
+        resp.write('data:' + JSON.stringify({success: true, payload: status ? status : {}, errors: []}) + '\n\n');
     });
 });
 
