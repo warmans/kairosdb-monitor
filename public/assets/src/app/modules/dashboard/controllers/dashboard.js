@@ -21,6 +21,8 @@ define([], function () {
 
                     var data = JSON.parse(msg.data);
 
+                    console.log(data);
+
                     if (data.success === true) {
                         $scope.clusterStatus = data.payload;
                     } else {
