@@ -76,7 +76,7 @@
                         <td><abbr title="{{node.hostname}}">{{node.label}}</abbr></td>
 
                         <td>{{node.msg}}</td>
-                        <td>{{node.response_time_ms}}ms <span class="text-muted">({{node.response_time_ms_min}}ms min | {{node.response_time_ms_max}}ms max | {{node.response_time_ms_sum / node.response_time_ms_count | number:2}}ms avg)</span></td>
+                        <td>{{node.response_time_ms}}ms <span class="text-muted">({{node.response_time_ms_min}}ms min | {{node.response_time_ms_max}}ms max | {{node.response_time_ms_sum / node.response_time_ms_count | number:0}}ms avg)</span></td>
                         <td><span ng-bind-html="node.tags | tags:'label-primary'"></span></td>
                         <td>{{node.updated}}</td>
                         <!--td><a class="btn btn-primary btn-xs" href="/#/dashboard/host/{{node.hostname}}">Details</a></td-->
