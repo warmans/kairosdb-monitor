@@ -21,17 +21,37 @@ define([], function () {
 
                     var data = JSON.parse(msg.data);
 
-                    console.log(data);
-
                     if (data.success === true) {
                         $scope.clusterStatus = data.payload;
                     } else {
-                        $scope.errors.push('Cluster status unavailable: '.data.status+' was returned');
+                        $scope.errors.push('Cluster status unavailable: '+data.status+' was returned');
                     }
                 });
             },
             false
         );
+
+        source.onerror = function(e) {
+            $scope.$apply(function () {
+
+                //don't show any data until it's working again
+                $scope.clusterStatus = {};
+
+                var txt;
+                switch(e.target.readyState){
+                    case EventSource.CONNECTING:
+                        txt = 'reconnecting...';
+                        break;
+                    case EventSource.CLOSED:
+                        txt = 'connection failed. reload the page to re-establish the connection';
+                        break;
+                }
+
+                console.log('Status socket error... '+txt);
+                $scope.errors.push('Status socket error... '+txt);
+            });
+        };
+
 
         //------------------------------------------
         // Timeseries
