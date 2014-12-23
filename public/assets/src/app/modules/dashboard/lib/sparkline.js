@@ -17,7 +17,7 @@ angular.module('sparkline')
                     fillColor: '#B3D0EA',
                     normalRangeColor: '#d4ffaa',
                     normalRangeMin: 0,
-                    normalRangeMax: 100,
+                    normalRangeMax: 500,
                     spotColor: false,
                     minSpotColor: false,
                     maxSpotColor: false,
