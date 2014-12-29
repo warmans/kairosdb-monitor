@@ -1,11 +1,12 @@
 define([
+    './lib/sparkline',
     './controllers/dashboard',
     './controllers/host'
     ],
 
-    function (dashboardController, hostController) {
+    function (sparkLineModule, dashboardController, hostController) {
 
-        var app = angular.module('monitor.dashboard', []);
+        var app = angular.module('monitor.dashboard', ['sparkline']);
 
         //module config
         app.config(['$routeProvider', function($routeProvider){

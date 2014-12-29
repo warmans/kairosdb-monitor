@@ -6171,3 +6171,18 @@ body {
   font-size: 4em;
   font-weight: bold;
 }
+.change {
+  font-size: 0.8em;
+}
+.change.inc {
+  color: #a94442;
+}
+a.change.inc:hover {
+  color: #843534;
+}
+.change.dec {
+  color: #3c763d;
+}
+a.change.dec:hover {
+  color: #2b542c;
+}
