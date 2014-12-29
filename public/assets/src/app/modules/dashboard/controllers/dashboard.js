@@ -1,32 +1,61 @@
 define([], function () {
 
     function controller($scope, $http) {
+
         $scope.errors = [];
+
+        //------------------------------------------
+        // Status
+        //------------------------------------------
+
         $scope.clusterStatus = {};
 
-        $scope.updateStatus = function(){
+        var source = new EventSource('/api/v1/cluster/status');
+        source.addEventListener(
+            'message',
+            function (msg) {
+                $scope.$apply(function () {
 
-            //reset errors
-            $scope.errors = [];
+                    //reset errors on new message
+                    $scope.errors = [];
 
-            $http.get('/api/v1/cluster/status').
-                success(function(data, status, headers, config) {
+                    var data = JSON.parse(msg.data);
+
                     if (data.success === true) {
                         $scope.clusterStatus = data.payload;
                     } else {
-                        $scope.errors.push(data.status+' status was returned');
+                        $scope.errors.push('Cluster status unavailable: '+data.status+' was returned');
                     }
-                }).
-                error(function(data, status, headers, config) {
-                    $scope.errors.push('Failed to retrieve cluster status');
                 });
+            },
+            false
+        );
+
+        source.onerror = function(e) {
+            $scope.$apply(function () {
+
+                //don't show any data until it's working again
+                $scope.clusterStatus = {};
+
+                var txt;
+                switch(e.target.readyState){
+                    case EventSource.CONNECTING:
+                        txt = 'reconnecting...';
+                        break;
+                    case EventSource.CLOSED:
+                        txt = 'connection failed. reload the page to re-establish the connection';
+                        break;
+                }
+
+                console.log('Status socket error... '+txt);
+                $scope.errors.push('Status socket error... '+txt);
+            });
         };
 
-        //load initial status
-        $scope.updateStatus();
 
-        //start updating
-        setInterval($scope.updateStatus, 10000);
+        //------------------------------------------
+        // Timeseries
+        //------------------------------------------
 
         $scope.ingestStats = {};
         $scope.ingestChartOptions = {
@@ -45,29 +74,45 @@ define([], function () {
             }
         };
 
+        $scope.query = {
+            numHours: 1
+        };
 
         $scope.updateIngestStats = function(){
             //reset errors
             $scope.errors = [];
 
-            $http.get('/api/v1/cluster/ingest').
+            var ingestStatsQuery = {
+                "metrics": [{
+                    "tags": {},
+                    "name": "kairosdb.http.ingest_count",
+                    "aggregators": [{"name": "sum", "align_sampling": true, "sampling": {"value": "1", "unit": "minutes"}}]
+                }],
+                "cache_time": 0,
+                "start_relative": { "value": $scope.query.numHours, "unit": "hours" }
+            };
+
+            $http.post('/api/v1/cluster/query', ingestStatsQuery).
                 success(function(response, status, headers, config) {
                     if (response.success === true) {
                         $scope.ingestStats = response.payload;
                     } else {
-                        $scope.errors.push('Ingest stats report an error: '+response.msg);
+                        $scope.errors.push('Chart data not available because: '+response.errors.join(', '));
                     }
                 }).
                 error(function(response, status, headers, config) {
-                    $scope.errors.push('Failed to retrieve ingest stats');
+                    $scope.errors.push('Chart data not available because: '+status+' error');
+                }).
+                finally(function(){
+                    //schedule another update for 10 seconds time
+                    setTimeout(function(){
+                        $scope.updateIngestStats();
+                    }, 10000);
                 });
         };
 
-        //load initial status
+        //start updating ingest stats
         $scope.updateIngestStats();
-
-        //start updating
-        setInterval($scope.updateIngestStats, 10000);
     }
 
     controller.$inject=['$scope', '$http'];

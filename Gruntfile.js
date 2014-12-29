@@ -10,6 +10,7 @@ module.exports = function(grunt) {
                   'public/assets/dist/vendor.js': [
                       //jquery
                       'bower_components/jquery/dist/jquery.js',
+                      'bower_components/jquery.sparkline.build/dist/jquery.sparkline.min.js',
                       //angular
                       'bower_components/angular/angular.js',
                       'bower_components/angular-route/angular-route.js',

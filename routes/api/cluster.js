@@ -1,28 +1,76 @@
 var express = require('express');
 var router = express.Router();
 
+var request = require('request');
+var monitor = require('../../lib/status-monitor');
+var kairosdb = require('../../lib/kairosdb');
+var apiResponder = require('../../lib/api-responder');
+
+//-------------------------------------------------------------------------------------------------------------------
+// Handle Status Updates (push)
+//-------------------------------------------------------------------------------------------------------------------
+var openConnections = [];
+
 router.get('/status', function(req, res) {
-    global.memoryCache.get('cluster.status', function(err, result){
-        if (err) {
-            res.json({success: false, msg: 'ERROR', payload: {}, errors: [err]});
-            return;
-        }
-        res.json({success: true, msg: 'OK', payload: result ? result : {}});
+
+    //don't timeout
+    req.socket.setTimeout(Infinity);
+
+    // send headers for event-stream connection
+    // see spec for more information
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    });
+    res.write('\n');
+
+    // push this res object to our global variable
+    openConnections.push(res);
+
+    //clean up disconnected clients
+    req.on('close', function(){
+        openConnections.splice(openConnections.indexOf(res), 1);
+    });
+
+});
+
+monitor.addSubscriber(function(status){
+    //update clients with latest status
+    openConnections.forEach(function(resp) {
+        var d = new Date();
+        resp.write('id: ' + d.getMilliseconds() + '\n');
+        resp.write('data:' + JSON.stringify({success: true, payload: status ? status : {}, errors: []}) + '\n\n');
     });
 });
 
-router.get('/ingest', function(req, res) {
-    global.memoryCache.get('cluster.ingest_stats', function(err, result){
-        if (err) {
-            res.json({success: false, msg: err, payload: {}, errors: [err]});
-            return;
-        }
-        if (result) {
-            res.json({success: result.success, msg: result.msg, payload: result});
-        } else {
-            res.json({success: true, msg: 'No data in cache', payload: {}});
-        }
-    });
+//-------------------------------------------------------------------------------------------------------------------
+// Handle data queries (pull)
+//-------------------------------------------------------------------------------------------------------------------
+
+router.post('/query', function(req, res) {
+    var startTime = Date.now();
+
+    kairosdb.query(
+        req.body,
+        function (err, result) {
+            if (err) {
+                apiResponder.respond(res, false, {}, [err]);
+                return;
+            }
+
+            var payload = {
+                query_time_ms: Date.now() - startTime,
+                data:  [],
+                updated: new Date()
+            };
+
+            if (result['queries']) {
+                payload.data = result['queries'][0]['results'][0]['values'] ? result['queries'][0]['results'][0]['values'] : [];
+            }
+            apiResponder.respond(res, true, payload, []);
+        },
+        60);
 });
 
 module.exports = router;
