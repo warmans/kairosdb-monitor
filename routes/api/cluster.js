@@ -25,7 +25,7 @@ router.get('/status', function(req, res) {
     });
     res.write('\n');
 
-    // push this res object to our global variable
+    // push this res object into the list of connected clients
     openConnections.push(res);
 
     //clean up disconnected clients

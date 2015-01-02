@@ -25,6 +25,7 @@ define([], function () {
                         $scope.clusterStatus = data.payload;
                     } else {
                         $scope.errors.push('Cluster status unavailable: '+data.status+' was returned');
+                        console.log('Cluster status unavailable: '+data.status+' was returned');
                     }
                 });
             },
@@ -34,11 +35,13 @@ define([], function () {
         source.onerror = function(e) {
             $scope.$apply(function () {
 
+                console.log('socket error '+e.target.readyState);
+
                 //don't show any data until it's working again
                 $scope.clusterStatus = {};
 
                 var txt;
-                switch(e.target.readyState){
+                switch (e.target.readyState) {
                     case EventSource.CONNECTING:
                         txt = 'reconnecting...';
                         break;
@@ -47,7 +50,6 @@ define([], function () {
                         break;
                 }
 
-                console.log('Status socket error... '+txt);
                 $scope.errors.push('Status socket error... '+txt);
             });
         };
