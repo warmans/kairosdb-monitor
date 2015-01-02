@@ -19,7 +19,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/v1/cluster', require('./routes/api/cluster'));
-app.use('/api/v1/host', require('./routes/api/host'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
