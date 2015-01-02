@@ -33,9 +33,11 @@ define([], function () {
         );
 
         source.onerror = function(e) {
-            $scope.$apply(function () {
 
-                console.log('socket error '+e.target.readyState);
+            //always log full error to console
+            console.log(e);
+
+            $scope.$apply(function () {
 
                 //don't show any data until it's working again
                 $scope.clusterStatus = {};
@@ -43,7 +45,7 @@ define([], function () {
                 var txt;
                 switch (e.target.readyState) {
                     case EventSource.CONNECTING:
-                        txt = 'reconnecting...';
+                        txt = 'connecting...';
                         break;
                     case EventSource.CLOSED:
                         txt = 'connection failed. reload the page to re-establish the connection';
