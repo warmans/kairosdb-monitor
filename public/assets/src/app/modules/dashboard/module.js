@@ -1,7 +1,6 @@
 define([
     './lib/sparkline',
-    './controllers/dashboard',
-    './controllers/host'
+    './controllers/dashboard'
     ],
 
     function (sparkLineModule, dashboardController, hostController) {
@@ -14,14 +13,9 @@ define([
                 .when('/dashboard', {
                     templateUrl: '/assets/src/app/modules/dashboard/views/dashboard.html',
                     controller: 'dashboardController'
-                })
-                .when('/dashboard/host/:host', {
-                    templateUrl: '/assets/src/app/modules/dashboard/views/host.html',
-                    controller: 'hostController'
                 });
         }]);
 
         app.controller('dashboardController', dashboardController);
-        app.controller('hostController', hostController);
     }
 );
