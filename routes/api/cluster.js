@@ -25,7 +25,7 @@ router.get('/status', function(req, res) {
     });
     res.write('\n');
 
-    // push this res object to our global variable
+    // push this res object into the list of connected clients
     openConnections.push(res);
 
     //clean up disconnected clients
@@ -66,7 +66,10 @@ router.post('/query', function(req, res) {
             };
 
             if (result['queries']) {
-                payload.data = result['queries'][0]['results'][0]['values'] ? result['queries'][0]['results'][0]['values'] : [];
+                payload.data = [];
+                result['queries'].forEach(function(result) {
+                    payload.data.push(result['results'][0]['values'] ? result['results'][0]['values'] : []);
+                });
             }
             apiResponder.respond(res, true, payload, []);
         },

@@ -20,6 +20,7 @@ module.exports = function(grunt) {
                       'bower_components/flot/jquery.flot.js',
                       'bower_components/flot/jquery.flot.time.js',
                       'bower_components/flot/jquery.flot.resize.js',
+                      'bower_components/flot/jquery.flot.stack.js',
                       'bower_components/flot.tooltip/js/jquery.flot.tooltip.min.js',
                       'bower_components/angular-flot/angular-flot.js',
                       //require

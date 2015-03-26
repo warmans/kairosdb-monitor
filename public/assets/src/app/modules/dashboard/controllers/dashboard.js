@@ -25,6 +25,7 @@ define([], function () {
                         $scope.clusterStatus = data.payload;
                     } else {
                         $scope.errors.push('Cluster status unavailable: '+data.status+' was returned');
+                        console.log('Cluster status unavailable: '+data.status+' was returned');
                     }
                 });
             },
@@ -32,22 +33,25 @@ define([], function () {
         );
 
         source.onerror = function(e) {
+
+            //always log full error to console
+            console.log(e);
+
             $scope.$apply(function () {
 
                 //don't show any data until it's working again
                 $scope.clusterStatus = {};
 
                 var txt;
-                switch(e.target.readyState){
+                switch (e.target.readyState) {
                     case EventSource.CONNECTING:
-                        txt = 'reconnecting...';
+                        txt = 'connecting...';
                         break;
                     case EventSource.CLOSED:
                         txt = 'connection failed. reload the page to re-establish the connection';
                         break;
                 }
 
-                console.log('Status socket error... '+txt);
                 $scope.errors.push('Status socket error... '+txt);
             });
         };
@@ -60,7 +64,7 @@ define([], function () {
         $scope.ingestStats = {};
         $scope.ingestChartOptions = {
             grid: { hoverable: true, borderWidth: 0},
-            series: { shadowSize: 0 },
+            series: { shadowSize: 0, stack: true },
             lines : { lineWidth : 1, fill: true },
             legend: { show: false },
             tooltip: true,
@@ -87,6 +91,10 @@ define([], function () {
                     "tags": {},
                     "name": "kairosdb.http.ingest_count",
                     "aggregators": [{"name": "sum", "align_sampling": true, "sampling": {"value": "1", "unit": "minutes"}}]
+                },{
+                    "tags": {},
+                    "name": "kairosdb.protocol.telnet_request_count",
+                    "aggregators": [{"name": "sum", "align_sampling": true, "sampling": { "value": "1", "unit": "minutes"}}]
                 }],
                 "cache_time": 0,
                 "start_relative": { "value": $scope.query.numHours, "unit": "hours" }
