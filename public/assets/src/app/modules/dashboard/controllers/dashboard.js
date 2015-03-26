@@ -64,7 +64,7 @@ define([], function () {
         $scope.ingestStats = {};
         $scope.ingestChartOptions = {
             grid: { hoverable: true, borderWidth: 0},
-            series: { shadowSize: 0 },
+            series: { shadowSize: 0, stack: true },
             lines : { lineWidth : 1, fill: true },
             legend: { show: false },
             tooltip: true,
@@ -91,6 +91,10 @@ define([], function () {
                     "tags": {},
                     "name": "kairosdb.http.ingest_count",
                     "aggregators": [{"name": "sum", "align_sampling": true, "sampling": {"value": "1", "unit": "minutes"}}]
+                },{
+                    "tags": {},
+                    "name": "kairosdb.protocol.telnet_request_count",
+                    "aggregators": [{"name": "sum", "align_sampling": true, "sampling": { "value": "1", "unit": "minutes"}}]
                 }],
                 "cache_time": 0,
                 "start_relative": { "value": $scope.query.numHours, "unit": "hours" }
