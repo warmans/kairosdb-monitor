@@ -103,7 +103,19 @@ define([], function () {
             $http.post('/api/v1/cluster/query', ingestStatsQuery).
                 success(function(response, status, headers, config) {
                     if (response.success === true) {
-                        $scope.ingestStats = response.payload;
+
+                        var series = [
+                            {label: 'HTTP', data: response.payload.data[0], color: '#214565'},
+                            {label: 'TELNET', data: response.payload.data[1], color: '#428bca'}
+                        ];
+
+                        //sort series to avoid flot stacking bug
+                        series.sort(function (a, b) {
+                            return b.data.length - a.data.length;
+                        });
+
+                        $scope.ingestStats = series;
+
                     } else {
                         $scope.errors.push('Chart data not available because: '+response.errors.join(', '));
                     }

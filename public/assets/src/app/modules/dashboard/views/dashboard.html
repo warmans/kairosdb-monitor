@@ -26,7 +26,7 @@
                     <h3 class="panel-title">INGEST REQUESTS PER MINUITE</h3>
                 </div>
                 <div class="panel-body">
-                    <flot dataset="[{label: 'HTTP', data: ingestStats.data[0], color: '#214565'},{label: 'TELNET', data: ingestStats.data[1], color: '#428bca'}]" options="ingestChartOptions" height="200px" width="100%"></flot>
+                    <flot dataset="ingestStats" options="ingestChartOptions" height="200px" width="100%"></flot>
                 </div>
             </div>
         </div>
